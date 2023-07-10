@@ -12,7 +12,9 @@ coefs = na.omit(Horvath_genes_methylation$CoefficientTraining.x)
 names(coefs) = Horvath_genes_methylation$Symbol
 gseaRes=fgsea(pathways_bp,coefs)
 fgseaMultilevelRes <- fgseaMultilevel(pathways_bp, coefs, maxSize=500)
-View(gseaRes)
+
+#visualization 
+
 
 head(gseaRes[order(pval), ])
 #top pathways
@@ -35,7 +37,6 @@ plotEnrichment(pathways_bp[["GOBP_METHYLATION"]],coefs)
 
 
 #new code 
-
 
 
 
