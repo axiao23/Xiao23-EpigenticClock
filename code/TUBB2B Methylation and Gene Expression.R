@@ -33,6 +33,8 @@ ggplot(TUBB2B_expression_methylation, aes(x = TUBB2B_methylation, y = TUBB2B_exp
   geom_hex() 
 #linear regression 
 lmTUBB2B = lm(TUBB2B_expression~TUBB2B_methylation, data = TUBB2B_expression_methylation)
-summary(lmTUBB2B)
+summary(lmTUBB2B) 
 plot(lmTUBB2B, pch = 16, col = "red")
 plot(lmTUBB2B$residuals, pch = 16, col = "blue")
+
+
