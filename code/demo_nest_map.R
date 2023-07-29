@@ -4,17 +4,76 @@ library(broom)
 tcga_dat = read.csv("../data/TCGA_LUAD_EXPRESSION_METHYLATION_data.csv")
 dim(tcga_dat)
 
+#nested for loops here
 cg_indices = grep("cg",names(tcga_dat))
+length(cg_indices)
 gene_indices = setdiff(2:ncol(tcga_dat),cg_indices)
-
-output = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+length(gene_indices)
+#output = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+#output2 = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+lmgenes <- data.frame(matrix(NA,    # Create empty data frame
+                          nrow = 2,
+                          ncol = 9))
+counter = 0
 for(i in 1:length(gene_indices[1:3]))
 {
   for(j in 1:length(cg_indices[1:3]))
   {
+    counter = counter + 1
     print(paste(c("Gene:", names(tcga_dat)[gene_indices[i]], "cg:",names(tcga_dat)[cg_indices[j]])))
+    #model1 = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #print(model1)
+    lmgenes[,counter] = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #colnames(lmgenes) <- genes[1:3]
+    #print(lmgenes)
+    #beta = coef(lmgenes)
+    #model1 = data.frame(beta)
     # demo storing correlations
-    output[i,j] = cor(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
+    #output[i,j] = coef(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
+    #output2[i,j] = cor(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
+  
+    # run the linear model with lm
+    
+    # store the coefficient for methylation in one matrix
+    
+    # store the p-value for methylation in another matrix
+  }
+}
+lmgenes1 <- lmgenes[2,]
+lmgenes1[2,] <- lmgenes1[c(2,5,8)]
+lmgenes1[3,] <- lmgenes1[c(3,6,9)]
+lmgenes1 <- lmgenes1[c(1,4,7)]
+colnames(lmgenes1) <- genes[1:3]
+rownames(lmgenes1) <- tcga_meth_long$probeID[1:3]
+
+
+# entire dataset nested loop
+cg_indices = grep("cg",names(tcga_dat))
+length(cg_indices)
+gene_indices = setdiff(2:ncol(tcga_dat),cg_indices)
+length(gene_indices)
+#output = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+#output2 = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+lmgenes4 <- data.frame(matrix(NA,    # Create empty data frame
+                             nrow = 2,
+                             ncol = 243))
+counter = 0
+for(i in 1:length(gene_indices[201:243]))
+{
+  for(j in 1:length(cg_indices))
+  {
+    counter = counter + 1
+    #print(paste(c("Gene:", names(tcga_dat)[gene_indices[i]], "cg:",names(tcga_dat)[cg_indices[j]])))
+    #model1 = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #print(model1)
+    lmgenes4[,counter] = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #colnames(lmgenes) <- genes[1:3]
+    #print(lmgenes)
+    #beta = coef(lmgenes)
+    #model1 = data.frame(beta)
+    # demo storing correlations
+    #output[i,j] = coef(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
+    #output2[i,j] = cor(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
     
     # run the linear model with lm
     
@@ -23,6 +82,12 @@ for(i in 1:length(gene_indices[1:3]))
     # store the p-value for methylation in another matrix
   }
 }
+lmgenes1 <- lmgenes[2,]
+lmgenes1[2,] <- lmgenes1[c(2,5,8)]
+lmgenes1[3,] <- lmgenes1[c(3,6,9)]
+lmgenes1 <- lmgenes1[c(1,4,7)]
+colnames(lmgenes1) <- genes[1:3]
+rownames(lmgenes1) <- tcga_meth_long$probeID[1:3]
 
 ## ALL THE CODE BELOW IS FOR NEST/MAP
 ## USE THIS LATER, ONCE YOU ARE COMFORTABLE WITH THE DOUBLE FOR LOOP 
@@ -94,7 +159,7 @@ tcga_meth_long = tcga_meth %>% pivot_longer(cols = contains("cg"),
 
 results_list = list()
 counter = 1
-for (i in colnames(tcga_meth_long[c(2:3)])){
+for (i in tcga_meth_long[c(2:3)]){
   print(i)
   counter = counter + 1
   model1 = tcga_meth_long %>%
