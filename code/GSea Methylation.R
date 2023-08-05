@@ -51,7 +51,10 @@ topPathwaysUp <- gseaRes[ES > 0][head(order(pval), n=10), pathway]
 topPathwaysDown <- gseaRes[ES < 0][head(order(pval), n=10), pathway]
 topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
 topPathways <- gseaRes[head(order(pval), n=15)][order(NES), pathway]
-plotGseaTable(pathways_bp[topPathways],coefs,gseaRes, gseaParam=0.5)
+plotGseaTable(pathways_bp[topPathwaysDown],coefs,gseaRes, gseaParam=0.1)
+
+# -------------------------------------------------------------------------
+
 
 #collapsed and main pathways
 collapsedPathways <- collapsePathways(gseaRes[order(pval)][padj < 0.01], 
@@ -64,6 +67,9 @@ plotGseaTable(pathways_bp[mainPathways], coefs, gseaRes,
 #separate Enrichment plots
 plotEnrichment(pathways_bp[["GOBP_DNA_METHYLATION"]],coefs)
 
+#visualization via bubbleplot
+df <-gseaRes[order(gseaRes$pval),]
+df <- df[1:30,]
 
 
 

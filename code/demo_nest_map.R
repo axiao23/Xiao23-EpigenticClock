@@ -9,27 +9,27 @@ cg_indices = grep("cg",names(tcga_dat))
 length(cg_indices)
 gene_indices = setdiff(2:ncol(tcga_dat),cg_indices)
 length(gene_indices)
-#output = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
+output = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
 #output2 = matrix(nrow=length(gene_indices), ncol=length(cg_indices))
-lmgenes <- data.frame(matrix(NA,    # Create empty data frame
-                          nrow = 2,
-                          ncol = 9))
-counter = 0
-for(i in 1:length(gene_indices[1:3]))
+#lmgenes <- data.frame(matrix(NA,    # Create empty data frame
+                          #nrow = 2,
+                          #ncol = 9))
+#counter = 0
+for(i in 1:length(gene_indices))
 {
-  for(j in 1:length(cg_indices[1:3]))
+  for(j in 1:length(cg_indices))
   {
     counter = counter + 1
-    print(paste(c("Gene:", names(tcga_dat)[gene_indices[i]], "cg:",names(tcga_dat)[cg_indices[j]])))
-    #model1 = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #print(paste(c("Gene:", names(tcga_dat)[gene_indices[i]], "cg:",names(tcga_dat)[cg_indices[j]])))
+    model1 = lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat)
     #print(model1)
-    lmgenes[,counter] = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
+    #lmgenes[,counter] = coef(lm(tcga_dat[,gene_indices[i]] ~ tcga_dat[,cg_indices[j]], data = tcga_dat))
     #colnames(lmgenes) <- genes[1:3]
     #print(lmgenes)
     #beta = coef(lmgenes)
     #model1 = data.frame(beta)
     # demo storing correlations
-    #output[i,j] = coef(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
+    output[i,j] = summary(model1)$coef[2,1]
     #output2[i,j] = cor(tcga_dat[,gene_indices[i]], tcga_dat[,cg_indices[j]])
   
     # run the linear model with lm
@@ -39,6 +39,16 @@ for(i in 1:length(gene_indices[1:3]))
     # store the p-value for methylation in another matrix
   }
 }
+output1 <- output[1:241,]
+output2 <- data.frame(output1)
+tcga_cgs <- tcga_meth[c(3:1798)]
+colnames(output2) <- colnames(tcga_cgs)
+rownames(output2)<- genes
+write.csv(output2, "../data/regression_TCGA_LUAD.csv", row.names = F)
+
+
+colnames(output) <-  
+output$gene <- genes[1:241]
 lmgenes1 <- lmgenes[2,]
 lmgenes1[2,] <- lmgenes1[c(2,5,8)]
 lmgenes1[3,] <- lmgenes1[c(3,6,9)]
@@ -82,6 +92,8 @@ for(i in 1:length(gene_indices[201:243]))
     # store the p-value for methylation in another matrix
   }
 }
+
+colnames(output) = 
 lmgenes1 <- lmgenes[2,]
 lmgenes1[2,] <- lmgenes1[c(2,5,8)]
 lmgenes1[3,] <- lmgenes1[c(3,6,9)]
@@ -180,5 +192,4 @@ final_df = Reduce(rbind.data.frame, results_list)
 methylation_coefs <- slice(model_results, seq(2, nrow(model_results), 2))
 padj <- p.adjust(methylation_coefs$p.value, method = "BH")
 methylation_coefs$padj <- padj
-
 
