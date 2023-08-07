@@ -51,21 +51,27 @@ write.csv(output2, "../data/regression_t_stat_standardized_TCGA_LUAD.csv", row.n
 library(igraph)
 # creating a square matrix 
 adj_matrix= read.csv("../data/regression_standardized_TCGA_LUAD.csv")
+t_adj_matrix = t(adj_matrix)
 rownames(adj_matrix) = genes
-df <- data.frame(matrix(ncol = 1796, nrow = 1555))
-df1 <- data.frame(matrix(ncol = 241, nrow = 1796))
-df2 <- data.frame(matrix(ncol = 2037, nrow = 241))
-colnames(df) = colnames(adj_matrix)
-rownames(df1) = rownames(adj_matrix)
-colnames(df2) = colnames(adj_matrix2)
-adj_matrix1 = rbind(adj_matrix,df)
-adj_matrix2 = cbind(adj_matrix1,df1)
-adj_matrix3 = rbind(adj_matrix2,df2)
-adj_matrix3[is.na(adj_matrix3)] <- 0
-adj_matrix3[1797:2037,242:2037] <- adj_matrix
-adj_matrix3 = as.matrix(adj_matrix3)
-igraph_regression<- graph_from_adjacency_matrix(adj_matrix3,
-                            mode = "max",
+adj_matrix1 <- data.frame(matrix(ncol = 2037, nrow = 2037))
+adj_matrix1[1:1796,1556:2037] = t_adj_matrix
+adj_matrix1[1797:2037, 1:1796] = adj_matrix
+adj_matrix1 = as.matrix(adj_matrix1)
+
+#df <- data.frame(matrix(ncol = 1796, nrow = 1555))
+#df1 <- data.frame(matrix(ncol = 241, nrow = 1796))
+#df2 <- data.frame(matrix(ncol = 2037, nrow = 241))
+#colnames(df) = colnames(adj_matrix)
+#rownames(df1) = rownames(adj_matrix)
+#colnames(df2) = colnames(adj_matrix2)
+#adj_matrix1 = rbind(adj_matrix,df)
+#adj_matrix2 = cbind(adj_matrix1,df1)
+#adj_matrix3 = rbind(adj_matrix2,df2)
+#adj_matrix3[is.na(adj_matrix3)] <- 0
+#adj_matrix3[1797:2037,242:2037] <- adj_matrix
+#adj_matrix3 = as.matrix(adj_matrix3)
+igraph_regression<- graph_from_adjacency_matrix(adj_matrix1,
+                            mode = "undirected",
                             weighted = TRUE,
                             diag = TRUE,
                             add.colnames = TRUE,
@@ -73,5 +79,5 @@ igraph_regression<- graph_from_adjacency_matrix(adj_matrix3,
 )
 dim(adj_matrix3)
 #create an edgelist from igraph
-edgelist_TCGA_LUAD <- as_edgelist(igraph_regression, names = FALSE)
-
+edgelist_TCGA_LUAD <- as_edgelist(igraph_regression, names = TRUE, directed = FALSE)
+write.csv(edgelist_TCGA_LUAD,"../data/edgelist_TCGA_LUAD_data.csv", row.names = FALSE)
