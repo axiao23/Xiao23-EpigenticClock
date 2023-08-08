@@ -51,13 +51,15 @@ write.csv(output2, "../data/regression_t_stat_standardized_TCGA_LUAD.csv", row.n
 library(igraph)
 # creating a square matrix 
 adj_matrix= read.csv("../data/regression_standardized_TCGA_LUAD.csv")
+dim(adj_matrix)
+rownames(adj_matrix)
 t_adj_matrix = t(adj_matrix)
 rownames(adj_matrix) = genes
 adj_matrix1 <- data.frame(matrix(ncol = 2037, nrow = 2037))
-adj_matrix1[1:1796,1556:2037] = t_adj_matrix
+adj_matrix1[1:1796,1797:2037] = t_adj_matrix
 adj_matrix1[1797:2037, 1:1796] = adj_matrix
 adj_matrix1 = as.matrix(adj_matrix1)
-
+adj_matrix1[is.na(adj_matrix1)] <- 0
 #df <- data.frame(matrix(ncol = 1796, nrow = 1555))
 #df1 <- data.frame(matrix(ncol = 241, nrow = 1796))
 #df2 <- data.frame(matrix(ncol = 2037, nrow = 241))
@@ -70,14 +72,18 @@ adj_matrix1 = as.matrix(adj_matrix1)
 #adj_matrix3[is.na(adj_matrix3)] <- 0
 #adj_matrix3[1797:2037,242:2037] <- adj_matrix
 #adj_matrix3 = as.matrix(adj_matrix3)
+adj_matrix_names <- c(names(tcga_dat)[cg_indices], genes)
+rownames(adj_matrix1) = adj_matrix_names
+colnames(adj_matrix1) = adj_matrix_names
+adj_matrix1 = as.matrix(adj_matrix1)
 igraph_regression<- graph_from_adjacency_matrix(adj_matrix1,
                             mode = "undirected",
                             weighted = TRUE,
-                            diag = TRUE,
-                            add.colnames = TRUE,
-                            add.rownames = NA
+                            diag = FALSE
 )
-dim(adj_matrix3)
+E(igraph_regression)$weight
+dim(adj_matrix)
 #create an edgelist from igraph
-edgelist_TCGA_LUAD <- as_edgelist(igraph_regression, names = TRUE, directed = FALSE)
+edgelist_TCGA_LUAD <- data.frame(as_edgelist(igraph_regression, names = TRUE))
+edgelist_TCGA_LUAD$weights <- abs(E(igraph_regression)$weight)
 write.csv(edgelist_TCGA_LUAD,"../data/edgelist_TCGA_LUAD_data.csv", row.names = FALSE)
